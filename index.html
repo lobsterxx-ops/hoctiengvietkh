@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Học Tiếng Việt — Vietnamese Reading & Pronunciation Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            viet: ['"Be Vietnam Pro"', 'sans-serif'],
+          },
+          colors: {
+            cream: '#FAF7F2',
+            sand: '#F2ECE1',
+            terracotta: {
+              DEFAULT: '#C84B31',
+              dark: '#A63A23',
+              light: '#F9EAE6',
+            },
+            jade: {
+              DEFAULT: '#1E6F5C',
+              dark: '#155243',
+              light: '#E6F2EF',
+            },
+            gold: {
+              DEFAULT: '#D99B26',
+              light: '#FDF6E7',
+            },
+            ink: '#1F2421',
+          },
+          boxShadow: {
+            card: '0 10px 30px -5px rgba(31, 36, 33, 0.06), 0 4px 10px -2px rgba(31, 36, 33, 0.03)',
+            soft: '0 4px 14px 0 rgba(31, 36, 33, 0.05)',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #FAF7F2;
+      color: #1F2421;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Soundwave bars animation for TTS playback */
+    @keyframes wavePulse {
+      0%, 100% { transform: scaleY(0.35); }
+      50% { transform: scaleY(1); }
+    }
+    .wave-bar {
+      transform-origin: center;
+      animation: wavePulse 0.9s ease-in-out infinite;
+    }
+    .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.6s; }
+
+    /* Recording pulse ring */
+    @keyframes recordPulse {
+      0% { transform: scale(1); opacity: 0.65; }
+      100% { transform: scale(1.45); opacity: 0; }
+    }
+    .record-ring {
+      animation: recordPulse 1.4s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+    }
+
+    /* Custom scrollbar for category strip */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased selection:bg-terracotta-light selection:text-terracotta-dark">
+
+  <!-- Toast Notification Banner (No alert() used) -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full px-4 sm:px-0"></div>
+
+  <!-- Top Navigation Header -->
+  <header class="bg-white/80 backdrop-blur-md border-b border-stone-200/80 sticky top-0 z-30">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-terracotta to-terracotta-dark text-white flex items-center justify-center shadow-sm shrink-0">
+          <!-- Stylized Lotus / Lantern Icon -->
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3c-2.5 3.5-4 6.5-4 9.5a4 4 0 0 0 8 0c0-3-1.5-6-4-9.5Z"/>
+            <path d="M5 10c-1 2.5-.5 5.5 2 7.5 1.5 1.2 3.3 1.5 5 1.5"/>
+            <path d="M19 10c1 2.5.5 5.5-2 7.5-1.5 1.2-3.3 1.5-5 1.5"/>
+            <path d="M3 16c2 2.5 5.5 3.5 9 3.5s7-1 9-3.5"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="font-viet font-bold text-lg sm:text-xl tracking-tight text-ink leading-none">
+            Học Tiếng Việt
+          </h1>
+          <p class="text-xs text-stone-500 mt-0.5 hidden sm:block">Reading &amp; Tone Pronunciation Studio</p>
+        </div>
+      </div>
+
+      <!-- Right Header Controls -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Completed Streak Pill -->
+        <div class="flex items-center gap-1.5 bg-jade-light text-jade-dark px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold">
+          <svg class="w-4 h-4 text-jade" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+          </svg>
+          <span id="mastered-count">0</span>
+          <span class="hidden sm:inline">Practiced</span>
+        </div>
+
+        <!-- Add Custom Sentence Button -->
+        <button id="open-custom-modal-btn" type="button" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 active:scale-[0.98] text-white text-xs sm:text-sm font-medium transition shadow-sm cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          <span>Add Sentence</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-6">
+
+    <!-- Category Selector & Progress Strip -->
+    <section class="flex flex-col gap-3">
+      <div class="flex items-center justify-between gap-2">
+        <div id="category-tabs" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+          <!-- Populated dynamically -->
+        </div>
+        <button id="tone-guide-toggle" type="button" class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold text-stone-600 hover:text-terracotta bg-white border border-stone-200 px-3 py-2 rounded-xl shadow-2xs transition cursor-pointer">
+          <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+          </svg>
+          <span>6 Tones Guide</span>
+        </button>
+      </div>
+
+      <!-- Collapsible 6 Vietnamese Tones Reference Drawer -->
+      <div id="tone-guide-drawer" class="hidden bg-white border border-stone-200/90 rounded-2xl p-4 sm:p-5 shadow-soft transition-all">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-bold text-ink flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-terracotta"></span>
+            The 6 Vietnamese Tones (Thanh Điệu) — Illustrated with "ma"
+          </h2>
+          <button id="close-tone-guide" type="button" class="text-stone-400 hover:text-stone-700 p-1 rounded-lg cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-center">
+          <div class="p-2.5 rounded-xl bg-cream border border-stone-200/70">
+            <div class="font-viet font-bold text-lg text-ink">ma</div>
+            <div class="text-[11px] font-semibold text-jade">Ngang (Level)</div>
+            <div class="text-[11px] text-stone-500 mt-0.5">Mid flat pitch • "ghost"</div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-cream border border-stone-200/70">
+            <div class="font-viet font-bold text-lg text-ink">má</div>
+            <div class="text-[11px] font-semibold text-terracotta">Sắc (Rising)</div>
+            <div class="text-[11px] text-stone-500 mt-0.5">Sharp rising • "mother"</div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-cream border border-stone-200/70">
+            <div class="font-viet font-bold text-lg text-ink">mà</div>
+            <div class="text-[11px] font-semibold text-sky-700">Huyền (Falling)</div>
+            <div class="text-[11px] text-stone-500 mt-0.5">Low trailing • "but/that"</div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-cream border border-stone-200/70">
+            <div class="font-viet font-bold text-lg text-ink">mả</div>
+            <div class="text-[11px] font-semibold text-amber-700">Hỏi (Dipping)</div>
+            <div class="text-[11px] text-stone-500 mt-0.5">Dip &amp; rise • "tomb"</div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-cream border border-stone-200/70">
+            <div class="font-viet font-bold text-lg text-ink">mã</div>
+            <div class="text-[11px] font-semibold text-purple-700">Ngã (Broken)</div>
+            <div class="text-[11px] text-stone-500 mt-0.5">Glottal break • "horse"</div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-cream border border-stone-200/70">
+            <div class="font-viet font-bold text-lg text-ink">mạ</div>
+            <div class="text-[11px] font-semibold text-rose-700">Nặng (Heavy)</div>
+            <div class="text-[11px] text-stone-500 mt-0.5">Short low drop • "rice seedling"</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="flex items-center gap-3">
+        <div class="flex-1 h-2 bg-sand rounded-full overflow-hidden">
+          <div id="deck-progress-bar" class="h-full bg-jade rounded-full transition-all duration-300" style="width: 10%;"></div>
+        </div>
+        <span id="deck-progress-text" class="text-xs font-semibold text-stone-500 tabular-nums">1 / 12</span>
+      </div>
+    </section>
+
+    <!-- Primary Sentence Flashcard -->
+    <section class="bg-white rounded-3xl border border-stone-200/80 shadow-card overflow-hidden">
+      <!-- Card Top Metadata Bar -->
+      <div class="px-5 sm:px-8 pt-5 pb-3 flex flex-wrap items-center justify-between gap-2 border-b border-stone-100">
+        <div class="flex items-center gap-2">
+          <span id="card-category-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-terracotta-light text-terracotta-dark">
+            Greetings
+          </span>
+          <span id="card-difficulty-badge" class="px-2.5 py-1 rounded-full text-xs font-medium bg-stone-100 text-stone-600">
+            Beginner
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Toggle Phonetic / Tone Notes -->
+          <button id="toggle-hints-btn" type="button" class="inline-flex items-center gap-1.5 text-xs font-medium text-stone-600 hover:text-ink px-2.5 py-1.5 rounded-lg hover:bg-stone-100 transition cursor-pointer" title="Toggle Pronunciation Guide">
+            <svg class="w-4 h-4 text-jade" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span id="toggle-hints-label">Hide Guide</span>
+          </button>
+
+          <!-- Delete Custom Sentence Button (hidden for built-in sentences) -->
+          <button id="delete-custom-btn" type="button" class="hidden text-xs font-medium text-rose-600 hover:bg-rose-50 px-2.5 py-1.5 rounded-lg transition cursor-pointer" title="Remove custom sentence">
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <!-- Card Main Reading Stage -->
+      <div class="px-5 sm:px-8 py-7 sm:py-10 text-center flex flex-col items-center">
+        <!-- Main Vietnamese Sentence -->
+        <h2 id="vietnamese-sentence" class="font-viet font-bold text-3xl sm:text-4xl md:text-[42px] text-ink leading-snug tracking-tight max-w-2xl">
+          Xin chào, rất vui được gặp bạn!
+        </h2>
+
+        <!-- English Translation -->
+        <p id="english-translation" class="mt-3 text-base sm:text-lg text-stone-600 font-medium max-w-xl">
+          Hello, very nice to meet you!
+        </p>
+
+        <!-- Phonetic Guide & Tone Notes Collapsible Box -->
+        <div id="hints-container" class="mt-5 w-full max-w-xl bg-cream/90 border border-stone-200/80 rounded-2xl p-4 text-left transition-all">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-stone-200/70">
+            <span class="text-[11px] uppercase tracking-wider font-bold text-stone-400">Phonetic Flow</span>
+            <span id="phonetic-guide" class="font-mono text-xs sm:text-sm text-jade-dark font-semibold">
+              sin chow, zut voo-ee duhk gap ban
+            </span>
+          </div>
+          <p id="tone-notes" class="mt-2.5 text-xs sm:text-sm text-stone-600 leading-relaxed">
+            <strong class="text-ink font-semibold">Tone Tip:</strong> Watch the rising <span class="font-viet font-semibold text-terracotta">rất</span> (sắc) and heavy glottal <span class="font-viet font-semibold text-terracotta">được / gặp / bạn</span> (nặng) tones at the end.
+          </p>
+        </div>
+
+        <!-- Primary Action Bar: Hear Sentence + Speed + Record Reading -->
+        <div class="mt-8 w-full max-w-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4">
+
+          <!-- Hear Sentence Group -->
+          <div class="flex items-center bg-jade-light/70 p-1.5 rounded-2xl border border-jade/20">
+            <button id="hear-sentence-btn" type="button" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-xl bg-jade hover:bg-jade-dark active:scale-[0.98] text-white font-semibold text-sm sm:text-base shadow-sm transition cursor-pointer">
+              <span id="hear-icon-wrap" class="flex items-center justify-center w-5 h-5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+                </svg>
+              </span>
+              <!-- Animated Equalizer during TTS -->
+              <span id="tts-wave-anim" class="hidden items-center gap-0.5 h-4">
+                <span class="wave-bar w-1 h-4 bg-white rounded-full"></span>
+                <span class="wave-bar w-1 h-4 bg-white rounded-full"></span>
+                <span class="wave-bar w-1 h-4 bg-white rounded-full"></span>
+                <span class="wave-bar w-1 h-4 bg-white rounded-full"></span>
+                <span class="wave-bar w-1 h-4 bg-white rounded-full"></span>
+              </span>
+              <span id="hear-btn-label">Hear Sentence</span>
+            </button>
+
+            <!-- Speed Toggle (1.0x / 0.75x) -->
+            <div class="flex items-center pl-1.5 gap-1">
+              <button type="button" data-speed="1" class="speed-pill px-2.5 py-2 rounded-xl text-xs font-bold bg-white text-jade-dark shadow-2xs transition cursor-pointer">
+                1.0x
+              </button>
+              <button type="button" data-speed="0.72" class="speed-pill px-2.5 py-2 rounded-xl text-xs font-bold text-jade-dark/70 hover:text-jade-dark transition cursor-pointer">
+                0.75x
+              </button>
+            </div>
+          </div>
+
+          <!-- Record Student Reading Button -->
+          <div class="relative flex items-center justify-center">
+            <span id="record-pulse-ring" class="hidden absolute inset-0 rounded-2xl bg-terracotta record-ring pointer-events-none"></span>
+            <button id="record-drill-btn" type="button" class="relative w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl bg-terracotta hover:bg-terracotta-dark active:scale-[0.98] text-white font-semibold text-sm sm:text-base shadow-sm transition cursor-pointer">
+              <span id="record-mic-icon" class="flex items-center justify-center w-5 h-5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                </svg>
+              </span>
+              <span id="record-stop-icon" class="hidden items-center justify-center w-5 h-5">
+                <span class="w-3.5 h-3.5 rounded-xs bg-white block"></span>
+              </span>
+              <span id="record-btn-label">Record Reading</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TTS Voice Status Helper (shown if browser lacks vi-VN voice or Gemini fallback is active) -->
+        <div id="voice-status-bar" class="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-stone-500">
+          <span id="voice-status-text">Voice: Detecting Vietnamese TTS...</span>
+          <select id="voice-select" class="hidden bg-stone-100 border border-stone-200 rounded-lg px-2 py-1 text-xs text-stone-700 max-w-[200px]"></select>
+        </div>
+      </div>
+
+      <!-- Live Recording Studio Drawer (Visible while recording) -->
+      <div id="recording-live-panel" class="hidden border-t border-terracotta/20 bg-terracotta-light/40 px-5 sm:px-8 py-5">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <span class="w-3 h-3 rounded-full bg-terracotta animate-ping"></span>
+            <div>
+              <p class="text-sm font-bold text-terracotta-dark">Listening to your Vietnamese reading...</p>
+              <p id="live-interim-transcript" class="text-xs text-stone-600 italic mt-0.5">Speak clearly into your microphone, then tap "Stop &amp; Analyze".</p>
+            </div>
+          </div>
+
+          <!-- Real-time Canvas Audio Visualizer -->
+          <div class="w-full sm:w-56 h-12 bg-white/90 rounded-xl border border-terracotta/20 px-2 flex items-center justify-center overflow-hidden">
+            <canvas id="audio-visualizer-canvas" class="w-full h-10 block"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Pronunciation Evaluation & Playback Panel (Visible after recording) -->
+      <div id="drill-result-panel" class="hidden border-t border-stone-200 bg-sand/45 px-5 sm:px-8 py-6">
+        <div class="flex flex-col gap-5">
+          <!-- Header Row: Score Badge + Student Audio Playback -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+              <!-- Circular Score Indicator -->
+              <div id="score-badge-ring" class="w-14 h-14 rounded-2xl bg-jade text-white flex flex-col items-center justify-center shadow-sm shrink-0">
+                <span id="drill-score-value" class="text-lg font-extrabold leading-none">92%</span>
+                <span class="text-[10px] uppercase tracking-wider opacity-90 mt-0.5">Score</span>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 id="drill-feedback-title" class="font-bold text-base sm:text-lg text-ink">Great pronunciation!</h3>
+                  <span id="eval-engine-badge" class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white border border-stone-200 text-stone-500">
+                    Speech Analysis
+                  </span>
+                </div>
+                <p id="drill-feedback-subtitle" class="text-xs sm:text-sm text-stone-600 mt-0.5">
+                  Compare your recording side-by-side with the native voice above.
+                </p>
+              </div>
+            </div>
+
+            <!-- Play Student Recording & Retry Controls -->
+            <div class="flex items-center gap-2.5 self-start sm:self-center">
+              <button id="play-student-audio-btn" type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-stone-50 border border-stone-300 text-ink font-semibold text-xs sm:text-sm shadow-2xs transition cursor-pointer">
+                <svg id="student-play-icon" class="w-4 h-4 text-terracotta" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                </svg>
+                <span id="play-student-label">Play My Recording</span>
+              </button>
+
+              <button id="retry-drill-btn" type="button" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-stone-200/80 hover:bg-stone-300/80 text-stone-800 font-semibold text-xs sm:text-sm transition cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+                <span>Try Again</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Word-by-Word Tone & Accuracy Breakdown -->
+          <div class="bg-white rounded-2xl border border-stone-200/80 p-4 sm:p-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-stone-400">Word-by-Word Breakdown</span>
+              <div class="flex items-center gap-3 text-[11px] font-medium text-stone-500">
+                <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-jade"></span> Exact Match</span>
+                <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-gold"></span> Close / Tone Check</span>
+                <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-terracotta"></span> Needs Practice</span>
+              </div>
+            </div>
+
+            <!-- Word Pills Container -->
+            <div id="word-comparison-chips" class="flex flex-wrap gap-2">
+              <!-- Populated dynamically -->
+            </div>
+
+            <!-- Recognized Transcript & Specific Coaching Note -->
+            <div class="mt-4 pt-3.5 border-t border-stone-100 flex flex-col gap-1.5 text-xs sm:text-sm">
+              <div class="flex flex-wrap items-baseline gap-2">
+                <span class="font-semibold text-stone-500">Heard:</span>
+                <span id="recognized-transcript-text" class="font-viet font-medium text-ink italic">"..."</span>
+              </div>
+              <p id="ai-coaching-tip" class="text-stone-600 leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Footer Navigation Controls -->
+      <div class="px-5 sm:px-8 py-4 bg-stone-50/90 border-t border-stone-200/80 flex items-center justify-between gap-3">
+        <button id="prev-card-btn" type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-700 font-semibold text-xs sm:text-sm shadow-2xs transition cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+          <span>Previous</span>
+        </button>
+
+        <button id="shuffle-card-btn" type="button" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-stone-600 hover:text-ink hover:bg-stone-200/60 font-semibold text-xs sm:text-sm transition cursor-pointer" title="Jump to random sentence">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />
+          </svg>
+          <span>Shuffle</span>
+        </button>
+
+        <button id="next-card-btn" type="button" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-ink hover:bg-stone-800 text-white font-semibold text-xs sm:text-sm shadow-2xs transition cursor-pointer">
+          <span>Next</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Quick Deck Overview Strip -->
+    <section class="bg-white/80 rounded-2xl border border-stone-200/70 p-4 sm:p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-stone-400">Sentences in Current Deck</h3>
+        <span class="text-xs text-stone-500">Tap any sentence to jump directly</span>
+      </div>
+      <div id="deck-list-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <!-- Populated dynamically -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal: Add Custom Vietnamese Sentence -->
+  <div id="custom-sentence-modal" class="hidden fixed inset-0 z-40 bg-ink/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-stone-200 animate-[fadeIn_0.15s_ease-out]">
+      <div class="flex items-center justify-between pb-3 border-b border-stone-100">
+        <div>
+          <h3 class="font-bold text-lg text-ink">Add Custom Practice Sentence</h3>
+          <p class="text-xs text-stone-500 mt-0.5">Type any Vietnamese phrase to hear it read and practice speaking it.</p>
+        </div>
+        <button id="close-custom-modal-btn" type="button" class="p-2 rounded-xl text-stone-400 hover:text-stone-700 hover:bg-stone-100 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="custom-sentence-form" class="mt-4 flex flex-col gap-4">
+        <div>
+          <label for="input-vietnamese" class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1.5">
+            Vietnamese Text (with diacritics) <span class="text-terracotta">*</span>
+          </label>
+          <input id="input-vietnamese" type="text" required placeholder="e.g., Cho tôi một ly cà phê sữa đá." class="w-full px-4 py-3 rounded-xl border border-stone-300 focus:border-jade focus:ring-2 focus:ring-jade/20 outline-none font-viet text-base text-ink" />
+        </div>
+
+        <div>
+          <label for="input-english" class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1.5">
+            English Translation <span class="text-terracotta">*</span>
+          </label>
+          <input id="input-english" type="text" required placeholder="e.g., Give me one iced milk coffee." class="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:border-jade focus:ring-2 focus:ring-jade/20 outline-none text-sm text-ink" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="input-phonetic" class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1.5">
+              Phonetic Guide (Optional)
+            </label>
+            <input id="input-phonetic" type="text" placeholder="e.g., chaw toy mot lee..." class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-jade focus:ring-2 focus:ring-jade/20 outline-none text-sm text-ink" />
+          </div>
+          <div>
+            <label for="input-difficulty" class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1.5">
+              Difficulty
+            </label>
+            <select id="input-difficulty" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-jade focus:ring-2 focus:ring-jade/20 outline-none text-sm text-ink bg-white">
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="input-notes" class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1.5">
+            Tone / Grammar Note (Optional)
+          </label>
+          <input id="input-notes" type="text" placeholder="e.g., Notice the ngã broken tone in 'sữa'." class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:border-jade focus:ring-2 focus:ring-jade/20 outline-none text-sm text-ink" />
+        </div>
+
+        <div class="mt-2 flex items-center justify-end gap-2.5">
+          <button type="button" id="cancel-custom-modal-btn" class="px-4 py-2.5 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-100 text-sm font-semibold cursor-pointer">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-jade hover:bg-jade-dark text-white text-sm font-semibold shadow-sm cursor-pointer">
+            Save &amp; Practice
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Hidden Audio Element for Student Playback & Gemini TTS Audio -->
+  <audio id="student-audio-player" class="hidden"></audio>
+  <audio id="tts-fallback-player" class="hidden"></audio>
+
+  <script>
+    /**
+     * ============================================================================
+     * HỌc TIẾNG VIỆT — Interactive Vietnamese Reading & Pronunciation Studio
+     * ============================================================================
+     * Architecture:
+     * 1. Curated & Custom Sentence Store (localStorage persisted)
+     * 2. Dual-Engine Vietnamese Audio Synthesis:
+     *    - Primary: Web Speech API (`window.speechSynthesis`) preferring `vi-VN` voices
+     *    - Fallback: Gemini TTS (`gemini-2.5-flash-preview-tts`) PCM -> WAV conversion
+     *      when browser lacks Vietnamese TTS voices
+     * 3. Student Pronunciation Drill Engine:
+     *    - MediaRecorder API captures student voice for instant self-comparison
+     *    - Web Audio API renders a live frequency/waveform meter while recording
+     *    - Web Speech API (`SpeechRecognition` in `vi-VN`) + Gemini Multimodal Audio
+     *      evaluation scores word-by-word tone accuracy & diacritic fidelity
+     */
+
+    // ---------------------------------------------------------------------------
+    // 1. CURATED VIETNAMESE SENTENCE DECK
+    // ---------------------------------------------------------------------------
+    const DEFAULT_SENTENCES = [
+      {
+        id: 'greet-1',
+        category: 'Greetings',
+        difficulty: 'Beginner',
+        vietnamese: 'Xin chào, rất vui được gặp bạn!',
+        english: 'Hello, very nice to meet you!',
+        phonetic: 'sin chow, zut voo-ee duhk gap ban',
+        notes: 'Keep "xin chào" level (ngang) and falling (huyền). Drop sharply on heavy (nặng) tones: "được", "gặp", "bạn".'
+      },
+      {
+        id: 'greet-2',
+        category: 'Greetings',
+        difficulty: 'Beginner',
+        vietnamese: 'Hôm nay bạn có khỏe không?',
+        english: 'How are you doing today?',
+        phonetic: 'hom nay ban kaw kweh khom',
+        notes: '"Khỏe" uses the dipping hỏi tone—let your voice dip low before rising slightly at the end.'
+      },
+      {
+        id: 'greet-3',
+        category: 'Greetings',
+        difficulty: 'Intermediate',
+        vietnamese: 'Cảm ơn bạn đã giúp đỡ tôi rất nhiều.',
+        english: 'Thank you very much for helping me.',
+        phonetic: 'gam uhn ban da zoop duh toy zut nyew',
+        notes: 'Contrast the dipping hỏi tone in "cảm" with the glottal broken ngã tones in "đã" and "đỡ".'
+      },
+      {
+        id: 'food-1',
+        category: 'Ordering Food',
+        difficulty: 'Beginner',
+        vietnamese: 'Cho tôi một tô phở bò tái nhé.',
+        english: 'Please give me one bowl of rare beef pho.',
+        phonetic: 'chaw toy mot toh fuh baw tai nyeh',
+        notes: '"Phở" has the dipping hỏi tone, while "bò" falls gently (huyền) and "tái" rises sharply (sắc).'
+      },
+      {
+        id: 'food-2',
+        category: 'Ordering Food',
+        difficulty: 'Beginner',
+        vietnamese: 'Làm ơn cho tôi một ly cà phê sữa đá.',
+        english: 'Please give me a glass of Vietnamese iced milk coffee.',
+        phonetic: 'lam uhn chaw toy mot lee ka feh suh-a da',
+        notes: '"Sữa" carries the broken ngã tone (brief glottal catch mid-vowel), followed by rising "đá" (sắc).'
+      },
+      {
+        id: 'food-3',
+        category: 'Ordering Food',
+        difficulty: 'Intermediate',
+        vietnamese: 'Món này ngon quá, tính tiền giúp em với!',
+        english: 'This dish is delicious, please bring the bill!',
+        phonetic: 'mon nay ngon kwa, tinh tyen zoop em vuh-ee',
+        notes: 'In Vietnamese dining culture, calling yourself "em" (when younger) adds natural warmth and politeness.'
+      },
+      {
+        id: 'travel-1',
+        category: 'Travel',
+        difficulty: 'Beginner',
+        vietnamese: 'Xin hỏi đường ra chợ Bến Thành đi lối nào?',
+        english: 'Excuse me, which way goes to Ben Thanh Market?',
+        phonetic: 'sin hoy du-ung za chuh ben thanh dee loy now',
+        notes: '"Chợ" (market) drops abruptly with the heavy nặng tone; "Thành" falls smoothly with huyền.'
+      },
+      {
+        id: 'travel-2',
+        category: 'Travel',
+        difficulty: 'Intermediate',
+        vietnamese: 'Từ đây đến sân bay mất khoảng bao lâu?',
+        english: 'How long does it take from here to the airport?',
+        phonetic: 'tuh day den sun bay mut khwang bow low',
+        notes: 'Notice the nasal ending in "sân" and the dipping hỏi tone in "khoảng" (approximately).'
+      },
+      {
+        id: 'travel-3',
+        category: 'Travel',
+        difficulty: 'Advanced',
+        vietnamese: 'Tôi muốn đặt một phòng đôi nhìn ra biển trong hai đêm.',
+        english: 'I would like to book a double room facing the sea for two nights.',
+        phonetic: 'toy moo-on dat mot fong doy nyin za byen trong hai dem',
+        notes: 'Practice smooth phrasing across clauses: pause lightly after "phòng đôi" before "nhìn ra biển".'
+      },
+      {
+        id: 'daily-1',
+        category: 'Daily Conversation',
+        difficulty: 'Beginner',
+        vietnamese: 'Tôi đang học nói tiếng Việt mỗi ngày.',
+        english: 'I am learning to speak Vietnamese every day.',
+        phonetic: 'toy dang hok noy tyeng vyet moy ngay',
+        notes: '"Tiếng" rises high (sắc) while "Việt" drops low and short (nặng)—the signature pair of the language name!'
+      },
+      {
+        id: 'daily-2',
+        category: 'Daily Conversation',
+        difficulty: 'Intermediate',
+        vietnamese: 'Bạn có thể nói chậm lại một chút được không?',
+        english: 'Could you please speak a little more slowly?',
+        phonetic: 'ban kaw theh noy chum lai mot choot duhk khom',
+        notes: 'An essential survival sentence! "Chậm" and "lại" both use the low heavy nặng tone.'
+      },
+      {
+        id: 'daily-3',
+        category: 'Daily Conversation',
+        difficulty: 'Advanced',
+        vietnamese: 'Cuối tuần này chúng ta đi dạo quanh hồ Hoàn Kiếm nhé!',
+        english: 'Let us take a walk around Hoan Kiem Lake this weekend!',
+        phonetic: 'kwoy twun nay choong ta dee zow kwanh hoh hwan kyem nyeh',
+        notes: 'Pay attention to the rising sắc tones in "cuối", "chúng", and "Kiếm" contrasting with level "quanh".'
+      }
+    ];
+
+    // ---------------------------------------------------------------------------
+    // 2. APPLICATION STATE
+    // ---------------------------------------------------------------------------
+    const state = {
+      sentences: [],
+      activeCategory: 'All',
+      currentIndex: 0,
+      speechRate: 1.0,
+      showHints: true,
+      practicedIds: new Set(),
+      // TTS voices
+      voices: [],
+      selectedVoiceURI: '',
+      isSpeaking: false,
+      // Recording & Audio
+      isRecording: false,
+      mediaRecorder: null,
+      audioChunks: [],
+      recordedBlob: null,
+      recordedAudioUrl: null,
+      audioContext: null,
+      analyserNode: null,
+      visualizerAnimId: null,
+      mediaStream: null,
+      // Speech Recognition
+      recognition: null,
+      finalTranscript: '',
+      interimTranscript: '',
+      speechRecognitionSupported: false
+    };
+
+    const apiKey = ""; // Runtime-injected Gemini API key when empty string
+
+    // ---------------------------------------------------------------------------
+    // 3. DOM ELEMENT REFERENCES
+    // ---------------------------------------------------------------------------
+    const el = {
+      categoryTabs: document.getElementById('category-tabs'),
+      toneGuideToggle: document.getElementById('tone-guide-toggle'),
+      toneGuideDrawer: document.getElementById('tone-guide-drawer'),
+      closeToneGuide: document.getElementById('close-tone-guide'),
+      deckProgressBar: document.getElementById('deck-progress-bar'),
+      deckProgressText: document.getElementById('deck-progress-text'),
+      masteredCount: document.getElementById('mastered-count'),
+
+      cardCategoryBadge: document.getElementById('card-category-badge'),
+      cardDifficultyBadge: document.getElementById('card-difficulty-badge'),
+      toggleHintsBtn: document.getElementById('toggle-hints-btn'),
+      toggleHintsLabel: document.getElementById('toggle-hints-label'),
+      deleteCustomBtn: document.getElementById('delete-custom-btn'),
+
+      vietnameseSentence: document.getElementById('vietnamese-sentence'),
+      englishTranslation: document.getElementById('english-translation'),
+      hintsContainer: document.getElementById('hints-container'),
+      phoneticGuide: document.getElementById('phonetic-guide'),
+      toneNotes: document.getElementById('tone-notes'),
+
+      hearSentenceBtn: document.getElementById('hear-sentence-btn'),
+      hearIconWrap: document.getElementById('hear-icon-wrap'),
+      ttsWaveAnim: document.getElementById('tts-wave-anim'),
+      hearBtnLabel: document.getElementById('hear-btn-label'),
+      speedPills: document.querySelectorAll('.speed-pill'),
+      voiceStatusText: document.getElementById('voice-status-text'),
+      voiceSelect: document.getElementById('voice-select'),
+
+      recordDrillBtn: document.getElementById('record-drill-btn'),
+      recordPulseRing: document.getElementById('record-pulse-ring'),
+      recordMicIcon: document.getElementById('record-mic-icon'),
+      recordStopIcon: document.getElementById('record-stop-icon'),
+      recordBtnLabel: document.getElementById('record-btn-label'),
+
+      recordingLivePanel: document.getElementById('recording-live-panel'),
+      liveInterimTranscript: document.getElementById('live-interim-transcript'),
+      visualizerCanvas: document.getElementById('audio-visualizer-canvas'),
+
+      drillResultPanel: document.getElementById('drill-result-panel'),
+      scoreBadgeRing: document.getElementById('score-badge-ring'),
+      drillScoreValue: document.getElementById('drill-score-value'),
+      drillFeedbackTitle: document.getElementById('drill-feedback-title'),
+      drillFeedbackSubtitle: document.getElementById('drill-feedback-subtitle'),
+      evalEngineBadge: document.getElementById('eval-engine-badge'),
+      playStudentAudioBtn: document.getElementById('play-student-audio-btn'),
+      playStudentLabel: document.getElementById('play-student-label'),
+      retryDrillBtn: document.getElementById('retry-drill-btn'),
+      wordComparisonChips: document.getElementById('word-comparison-chips'),
+      recognizedTranscriptText: document.getElementById('recognized-transcript-text'),
+      aiCoachingTip: document.getElementById('ai-coaching-tip'),
+
+      prevCardBtn: document.getElementById('prev-card-btn'),
+      shuffleCardBtn: document.getElementById('shuffle-card-btn'),
+      nextCardBtn: document.getElementById('next-card-btn'),
+      deckListGrid: document.getElementById('deck-list-grid'),
+
+      openCustomModalBtn: document.getElementById('open-custom-modal-btn'),
+      customSentenceModal: document.getElementById('custom-sentence-modal'),
+      closeCustomModalBtn: document.getElementById('close-custom-modal-btn'),
+      cancelCustomModalBtn: document.getElementById('cancel-custom-modal-btn'),
+      customSentenceForm: document.getElementById('custom-sentence-form'),
+      inputVietnamese: document.getElementById('input-vietnamese'),
+      inputEnglish: document.getElementById('input-english'),
+      inputPhonetic: document.getElementById('input-phonetic'),
+      inputDifficulty: document.getElementById('input-difficulty'),
+      inputNotes: document.getElementById('input-notes'),
+
+      studentAudioPlayer: document.getElementById('student-audio-player'),
+      ttsFallbackPlayer: document.getElementById('tts-fallback-player'),
+      toastContainer: document.getElementById('toast-container')
+    };
+
+    // ---------------------------------------------------------------------------
+    // 4. STORAGE & DECK HELPERS
+    // ---------------------------------------------------------------------------
+    function loadSavedData() {
+      try {
+        const customRaw = localStorage.getItem('hoc_tieng_viet_custom_v1');
+        const customSentences = customRaw ? JSON.parse(customRaw) : [];
+        state.sentences = [...DEFAULT_SENTENCES, ...customSentences];
+
+        const practicedRaw = localStorage.getItem('hoc_tieng_viet_practiced_v1');
+        if (practicedRaw) {
+          state.practicedIds = new Set(JSON.parse(practicedRaw));
+        }
+      } catch (err) {
+        state.sentences = [...DEFAULT_SENTENCES];
+      }
+    }
+
+    function saveCustomSentences() {
+      try {
+        const customOnly = state.sentences.filter(s => s.isCustom);
+        localStorage.setItem('hoc_tieng_viet_custom_v1', JSON.stringify(customOnly));
+      } catch (err) {
+        // Ignore storage quota errors
+      }
+    }
+
+    function savePracticedIds() {
+      try {
+        localStorage.setItem('hoc_tieng_viet_practiced_v1', JSON.stringify([...state.practicedIds]));
+      } catch (err) {
+        // Ignore storage errors
+      }
+    }
+
+    function getFilteredDeck() {
+      if (state.activeCategory === 'All') return state.sentences;
+      return state.sentences.filter(s => s.category === state.activeCategory);
+    }
+
+    function getCurrentSentence() {
+      const deck = getFilteredDeck();
+      if (deck.length === 0) return DEFAULT_SENTENCES[0];
+      if (state.currentIndex >= deck.length) state.currentIndex = 0;
+      return deck[state.currentIndex];
+    }
+
+    // ---------------------------------------------------------------------------
+    // 5. TOAST NOTIFICATIONS (REPLACES alert())
+    // ---------------------------------------------------------------------------
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      const palette = {
+        info: 'bg-ink text-white border-stone-700',
+        success: 'bg-jade-dark text-white border-jade',
+        warning: 'bg-amber-800 text-white border-amber-600',
+        error: 'bg-terracotta-dark text-white border-terracotta'
+      };
+      toast.className = `pointer-events-auto px-4 py-3 rounded-2xl border shadow-lg text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-all duration-300 ${palette[type] || palette.info}`;
+      toast.innerHTML = `<span>${escapeHtml(message)}</span>`;
+      el.toastContainer.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-6px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3600);
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // ---------------------------------------------------------------------------
+    // 6. UI RENDERING
+    // ---------------------------------------------------------------------------
+    function renderCategories() {
+      const baseCategories = ['All', 'Greetings', 'Ordering Food', 'Travel', 'Daily Conversation'];
+      const hasCustom = state.sentences.some(s => s.isCustom);
+      if (hasCustom) baseCategories.push('My Custom');
+
+      el.categoryTabs.innerHTML = baseCategories.map(cat => {
+        const isActive = state.activeCategory === cat;
+        const activeClasses = isActive
+          ? 'bg-ink text-white shadow-xs'
+          : 'bg-white text-stone-600 hover:text-ink border border-stone-200/90';
+        return `
+          <button type="button" data-category="${escapeHtml(cat)}" class="category-pill shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer ${activeClasses}">
+            ${escapeHtml(cat)}
+          </button>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.category-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          stopAllAudio();
+          state.activeCategory = btn.dataset.category;
+          state.currentIndex = 0;
+          hideDrillResults();
+          renderAll();
+        });
+      });
+    }
+
+    function renderCard() {
+      const deck = getFilteredDeck();
+      const item = getCurrentSentence();
+
+      // Update progress
+      const total = deck.length || 1;
+      const currentNum = Math.min(state.currentIndex + 1, total);
+      const pct = Math.round((currentNum / total) * 100);
+      el.deckProgressBar.style.width = `${pct}%`;
+      el.deckProgressText.textContent = `${currentNum} / ${total}`;
+      el.masteredCount.textContent = state.practicedIds.size;
+
+      // Update badges
+      el.cardCategoryBadge.textContent = item.category;
+      el.cardDifficultyBadge.textContent = item.difficulty || 'Beginner';
+
+      if (item.isCustom) {
+        el.deleteCustomBtn.classList.remove('hidden');
+      } else {
+        el.deleteCustomBtn.classList.add('hidden');
+      }
+
+      // Main texts
+      el.vietnameseSentence.textContent = item.vietnamese;
+      el.englishTranslation.textContent = item.english;
+      el.phoneticGuide.textContent = item.phonetic || 'Listen carefully to the native tone contour';
+      el.toneNotes.innerHTML = `<strong class="text-ink font-semibold">Tone Tip:</strong> ${escapeHtml(item.notes || 'Pay close attention to the rising (sắc), falling (huyền), and heavy (nặng) tone marks.')}`;
+
+      // Hints visibility
+      if (state.showHints) {
+        el.hintsContainer.classList.remove('hidden');
+        el.toggleHintsLabel.textContent = 'Hide Guide';
+      } else {
+        el.hintsContainer.classList.add('hidden');
+        el.toggleHintsLabel.textContent = 'Show Guide';
+      }
+    }
+
+    function renderDeckOverview() {
+      const deck = getFilteredDeck();
+      el.deckListGrid.innerHTML = deck.map((item, idx) => {
+        const isCurrent = idx === state.currentIndex;
+        const isPracticed = state.practicedIds.has(item.id);
+        return `
+          <button type="button" data-deck-idx="${idx}" class="deck-item-btn text-left p-3 rounded-xl border transition flex items-start justify-between gap-2.5 cursor-pointer ${
+            isCurrent
+              ? 'bg-terracotta-light/60 border-terracotta/40 shadow-2xs'
+              : 'bg-cream/60 hover:bg-cream border-stone-200/70'
+          }">
+            <div class="min-w-0">
+              <p class="font-viet font-semibold text-sm text-ink truncate">${escapeHtml(item.vietnamese)}</p>
+              <p class="text-xs text-stone-500 truncate mt-0.5">${escapeHtml(item.english)}</p>
+            </div>
+            <div class="shrink-0 flex items-center gap-1.5 mt-0.5">
+              ${isPracticed ? `<span class="w-5 h-5 rounded-full bg-jade-light text-jade flex items-center justify-center" title="Practiced">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg>
+              </span>` : ''}
+              <span class="text-[11px] font-bold text-stone-400">#${idx + 1}</span>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.deck-item-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          stopAllAudio();
+          state.currentIndex = parseInt(btn.dataset.deckIdx, 10);
+          hideDrillResults();
+          renderCard();
+          renderDeckOverview();
+        });
+      });
+    }
+
+    function renderAll() {
+      renderCategories();
+      renderCard();
+      renderDeckOverview();
+    }
+
+    // ---------------------------------------------------------------------------
+    // 7. TEXT-TO-SPEECH ENGINE (Web Speech API + Gemini TTS Fallback)
+    // ---------------------------------------------------------------------------
+    function initTTSVoices() {
+      if (!('speechSynthesis' in window)) {
+        el.voiceStatusText.textContent = 'Voice: AI Vietnamese Audio Ready';
+        return;
+      }
+
+      const populateVoices = () => {
+        const allVoices = window.speechSynthesis.getVoices();
+        state.voices = allVoices;
+        const viVoices = allVoices.filter(v =>
+          v.lang.toLowerCase().includes('vi') ||
+          v.name.toLowerCase().includes('vietnam') ||
+          v.name.toLowerCase().includes('linh') ||
+          v.name.toLowerCase().includes('an')
+        );
+
+        if (viVoices.length > 0) {
+          state.selectedVoiceURI = viVoices[0].voiceURI;
+          el.voiceStatusText.textContent = 'Vietnamese Voice:';
+          el.voiceSelect.classList.remove('hidden');
+          el.voiceSelect.innerHTML = viVoices.map(v =>
+            `<option value="${escapeHtml(v.voiceURI)}">${escapeHtml(v.name)} (${escapeHtml(v.lang)})</option>`
+          ).join('');
+        } else {
+          el.voiceStatusText.textContent = 'Voice: Native AI Vietnamese Pronunciation';
+          el.voiceSelect.classList.add('hidden');
+        }
+      };
+
+      populateVoices();
+      window.speechSynthesis.onvoiceschanged = populateVoices;
+    }
+
+    el.voiceSelect.addEventListener('change', (e) => {
+      state.selectedVoiceURI = e.target.value;
+    });
+
+    function setSpeakingUI(active) {
+      state.isSpeaking = active;
+      if (active) {
+        el.hearIconWrap.classList.add('hidden');
+        el.ttsWaveAnim.classList.remove('hidden');
+        el.ttsWaveAnim.classList.add('flex');
+        el.hearBtnLabel.textContent = 'Playing...';
+      } else {
+        el.hearIconWrap.classList.remove('hidden');
+        el.ttsWaveAnim.classList.add('hidden');
+        el.ttsWaveAnim.classList.remove('flex');
+        el.hearBtnLabel.textContent = 'Hear Sentence';
+      }
+    }
+
+    function stopAllAudio() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      el.ttsFallbackPlayer.pause();
+      el.ttsFallbackPlayer.currentTime = 0;
+      el.studentAudioPlayer.pause();
+      el.studentAudioPlayer.currentTime = 0;
+      el.playStudentLabel.textContent = 'Play My Recording';
+      setSpeakingUI(false);
+    }
+
+    async function speakCurrentSentence() {
+      if (state.isRecording) {
+        showToast('Finish or stop your recording first.', 'warning');
+        return;
+      }
+
+      if (state.isSpeaking) {
+        stopAllAudio();
+        return;
+      }
+
+      const item = getCurrentSentence();
+      const text = item.vietnamese;
+
+      // Check if browser has a native vi-VN voice
+      const viVoice = state.voices.find(v => v.voiceURI === state.selectedVoiceURI) ||
+                      state.voices.find(v => v.lang.toLowerCase().startsWith('vi'));
+
+      if ('speechSynthesis' in window && viVoice) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.voice = viVoice;
+        utterance.lang = viVoice.lang || 'vi-VN';
+        utterance.rate = state.speechRate;
+        utterance.pitch = 1.0;
+
+        utterance.onstart = () => setSpeakingUI(true);
+        utterance.onend = () => setSpeakingUI(false);
+        utterance.onerror = () => {
+          setSpeakingUI(false);
+          speakWithGeminiTTS(text);
+        };
+
+        setSpeakingUI(true);
+        window.speechSynthesis.speak(utterance);
+      } else {
+        // Fallback to Gemini TTS for crystal-clear Vietnamese pronunciation
+        await speakWithGeminiTTS(text);
+      }
+    }
+
+    async function speakWithGeminiTTS(vietnameseText) {
+      setSpeakingUI(true);
+      try {
+        const paceInstruction = state.speechRate < 0.9
+          ? 'Read this Vietnamese sentence slowly, clearly, and distinctly for a language student: '
+          : 'Read this Vietnamese sentence naturally and clearly: ';
+
+        const payload = {
+          contents: [{
+            parts: [{ text: `${paceInstruction}${vietnameseText}` }]
+          }],
+          generationConfig: {
+            responseModalities: ['AUDIO'],
+            speechConfig: {
+              voiceConfig: {
+                prebuiltVoiceConfig: { voiceName: 'Aoede' }
+              }
+            }
+          }
+        };
+
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+        const response = await fetchWithBackoff(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        const part = result?.candidates?.[0]?.content?.parts?.[0];
+        const audioData = part?.inlineData?.data;
+        const mimeType = part?.inlineData?.mimeType;
+
+        if (audioData && mimeType && mimeType.startsWith('audio/')) {
+          const rateMatch = mimeType.match(/rate=(\d+)/);
+          const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+          const pcmBuffer = base64ToArrayBuffer(audioData);
+          const pcm16 = new Int16Array(pcmBuffer);
+          const wavBlob = pcmToWav(pcm16, sampleRate);
+          const wavUrl = URL.createObjectURL(wavBlob);
+
+          el.ttsFallbackPlayer.src = wavUrl;
+          el.ttsFallbackPlayer.onended = () => setSpeakingUI(false);
+          el.ttsFallbackPlayer.onerror = () => setSpeakingUI(false);
+          await el.ttsFallbackPlayer.play();
+        } else {
+          throw new Error('No audio returned');
+        }
+      } catch (err) {
+        // Last-resort browser speech synthesis even without explicit vi-VN tag
+        if ('speechSynthesis' in window) {
+          const fallbackUtterance = new SpeechSynthesisUtterance(vietnameseText);
+          fallbackUtterance.lang = 'vi-VN';
+          fallbackUtterance.rate = state.speechRate;
+          fallbackUtterance.onend = () => setSpeakingUI(false);
+          fallbackUtterance.onerror = () => {
+            setSpeakingUI(false);
+            showToast('Unable to play audio on this browser. Try Chrome or Edge for Vietnamese voices.', 'warning');
+          };
+          window.speechSynthesis.speak(fallbackUtterance);
+        } else {
+          setSpeakingUI(false);
+          showToast('Audio playback unavailable in this browser environment.', 'warning');
+        }
+      }
+    }
+
+    function base64ToArrayBuffer(base64) {
+      const binaryString = atob(base64);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      return bytes.buffer;
+    }
+
+    function pcmToWav(pcm16, sampleRate) {
+      const numChannels = 1;
+      const bytesPerSample = 2;
+      const blockAlign = numChannels * bytesPerSample;
+      const byteRate = sampleRate * blockAlign;
+      const dataSize = pcm16.length * bytesPerSample;
+      const buffer = new ArrayBuffer(44 + dataSize);
+      const view = new DataView(buffer);
+
+      const writeString = (offset, str) => {
+        for (let i = 0; i < str.length; i++) {
+          view.setUint8(offset + i, str.charCodeAt(i));
+        }
+      };
+
+      writeString(0, 'RIFF');
+      view.setUint32(4, 36 + dataSize, true);
+      writeString(8, 'WAVE');
+      writeString(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true); // PCM
+      view.setUint16(22, numChannels, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, byteRate, true);
+      view.setUint16(32, blockAlign, true);
+      view.setUint16(34, 16, true);
+      writeString(36, 'data');
+      view.setUint32(40, dataSize, true);
+
+      let offset = 44;
+      for (let i = 0; i < pcm16.length; i++, offset += 2) {
+        view.setInt16(offset, pcm16[i], true);
+      }
+      return new Blob([buffer], { type: 'audio/wav' });
+    }
+
+    // ---------------------------------------------------------------------------
+    // 8. STUDENT RECORDING & LIVE WAVEFORM VISUALIZER
+    // ---------------------------------------------------------------------------
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        state.speechRecognitionSupported = false;
+        return;
+      }
+
+      state.speechRecognitionSupported = true;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'vi-VN';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event) => {
+        let interim = '';
+        let finalStr = '';
+        for (let i = 0; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalStr += transcript + ' ';
+          } else {
+            interim += transcript;
+          }
+        }
+        state.finalTranscript = finalStr.trim();
+        state.interimTranscript = interim.trim();
+
+        const preview = (state.finalTranscript + ' ' + state.interimTranscript).trim();
+        if (preview) {
+          el.liveInterimTranscript.textContent = `"${preview}"`;
+        }
+      };
+
+      recognition.onerror = () => {
+        // Silently handled; Gemini audio evaluation still processes the recorded audio blob
+      };
+
+      state.recognition = recognition;
+    }
+
+    async function toggleRecordingDrill() {
+      if (state.isRecording) {
+        stopRecordingDrill();
+      } else {
+        await startRecordingDrill();
+      }
+    }
+
+    async function startRecordingDrill() {
+      stopAllAudio();
+      hideDrillResults();
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showToast('Microphone recording is not supported in this browser.', 'error');
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
+
+        state.mediaStream = stream;
+        state.audioChunks = [];
+        state.finalTranscript = '';
+        state.interimTranscript = '';
+
+        // Setup MediaRecorder
+        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+          ? 'audio/webm;codecs=opus'
+          : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '');
+
+        const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+        state.mediaRecorder = recorder;
+
+        recorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) {
+            state.audioChunks.push(e.data);
+          }
+        };
+
+        recorder.onstop = async () => {
+          const blobType = recorder.mimeType || 'audio/webm';
+          const blob = new Blob(state.audioChunks, { type: blobType });
+          state.recordedBlob = blob;
+
+          if (state.recordedAudioUrl) {
+            URL.revokeObjectURL(state.recordedAudioUrl);
+          }
+          state.recordedAudioUrl = URL.createObjectURL(blob);
+          el.studentAudioPlayer.src = state.recordedAudioUrl;
+
+          cleanupAudioStream();
+          await evaluateStudentPronunciation(blob);
+        };
+
+        recorder.start(100);
+
+        // Start Web Speech Recognition in parallel if supported
+        if (state.speechRecognitionSupported && state.recognition) {
+          try {
+            state.recognition.start();
+          } catch (e) {
+            // Already started
+          }
+        }
+
+        // Start Live Waveform Visualizer
+        startVisualizer(stream);
+
+        // Update UI to Recording State
+        state.isRecording = true;
+        el.recordPulseRing.classList.remove('hidden');
+        el.recordMicIcon.classList.add('hidden');
+        el.recordStopIcon.classList.remove('hidden');
+        el.recordStopIcon.classList.add('flex');
+        el.recordBtnLabel.textContent = 'Stop & Analyze';
+        el.liveInterimTranscript.textContent = 'Speak clearly into your microphone, then tap "Stop & Analyze".';
+        el.recordingLivePanel.classList.remove('hidden');
+
+      } catch (err) {
+        showToast('Microphone permission denied or unavailable. Please allow mic access to record.', 'error');
+      }
+    }
+
+    function stopRecordingDrill() {
+      if (!state.isRecording) return;
+      state.isRecording = false;
+
+      // Update UI buttons immediately
+      el.recordPulseRing.classList.add('hidden');
+      el.recordMicIcon.classList.remove('hidden');
+      el.recordStopIcon.classList.add('hidden');
+      el.recordStopIcon.classList.remove('flex');
+      el.recordBtnLabel.textContent = 'Record Reading';
+      el.recordingLivePanel.classList.add('hidden');
+
+      if (state.speechRecognitionSupported && state.recognition) {
+        try {
+          state.recognition.stop();
+        } catch (e) {
+          // Ignore
+        }
+      }
+
+      if (state.mediaRecorder && state.mediaRecorder.state !== 'inactive') {
+        state.mediaRecorder.stop();
+      }
+    }
+
+    function cleanupAudioStream() {
+      if (state.visualizerAnimId) {
+        cancelAnimationFrame(state.visualizerAnimId);
+        state.visualizerAnimId = null;
+      }
+      if (state.audioContext) {
+        state.audioContext.close().catch(() => {});
+        state.audioContext = null;
+      }
+      if (state.mediaStream) {
+        state.mediaStream.getTracks().forEach(track => track.stop());
+        state.mediaStream = null;
+      }
+    }
+
+    function startVisualizer(stream) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      const audioCtx = new AudioCtx();
+      const source = audioCtx.createMediaStreamSource(stream);
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 64;
+      source.connect(analyser);
+
+      state.audioContext = audioCtx;
+      state.analyserNode = analyser;
+
+      const canvas = el.visualizerCanvas;
+      const ctx = canvas.getContext('2d');
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      const draw = () => {
+        if (!state.isRecording) return;
+        state.visualizerAnimId = requestAnimationFrame(draw);
+
+        // Responsive canvas sizing
+        const rect = canvas.getBoundingClientRect();
+        if (canvas.width !== Math.floor(rect.width) || canvas.height !== Math.floor(rect.height)) {
+          canvas.width = Math.floor(rect.width) || 220;
+          canvas.height = Math.floor(rect.height) || 40;
+        }
+
+        analyser.getByteFrequencyData(dataArray);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const barCount = 24;
+        const gap = 3;
+        const barWidth = Math.max(3, (canvas.width - gap * (barCount - 1)) / barCount);
+
+        for (let i = 0; i < barCount; i++) {
+          const val = dataArray[i] || 0;
+          const percent = Math.max(0.12, val / 255);
+          const barHeight = percent * (canvas.height - 6);
+          const x = i * (barWidth + gap);
+          const y = (canvas.height - barHeight) / 2;
+
+          ctx.fillStyle = percent > 0.55 ? '#C84B31' : '#1E6F5C';
+          ctx.beginPath();
+          ctx.roundRect(x, y, barWidth, barHeight, 3);
+          ctx.fill();
+        }
+      };
+
+      draw();
+    }
+
+    // ---------------------------------------------------------------------------
+    // 9. PRONUNCIATION SCORING & GEMINI MULTIMODAL AUDIO EVALUATION
+    // ---------------------------------------------------------------------------
+    function hideDrillResults() {
+      el.drillResultPanel.classList.add('hidden');
+    }
+
+    function normalizeWord(word) {
+      return word
+        .toLowerCase()
+        .replace(/[.,!?;:"'()—–-]/g, '')
+        .trim();
+    }
+
+    function stripVietnameseDiacritics(str) {
+      return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D');
+    }
+
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const dataUrl = reader.result;
+          const base64 = dataUrl.split(',')[1];
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    async function fetchWithBackoff(url, options, retries = 3, delay = 1000) {
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        const res = await fetch(url, options);
+        if (res.ok || attempt === retries) {
+          return res;
+        }
+        await new Promise(r => setTimeout(r, delay * Math.pow(2, attempt)));
+      }
+    }
+
+    async function evaluateStudentPronunciation(audioBlob) {
+      const targetItem = getCurrentSentence();
+      const targetText = targetItem.vietnamese;
+      const browserTranscript = (state.finalTranscript || state.interimTranscript || '').trim();
+
+      // Show loading state inside result panel
+      el.drillResultPanel.classList.remove('hidden');
+      el.drillScoreValue.textContent = '...';
+      el.drillFeedbackTitle.textContent = 'Analyzing your Vietnamese tones...';
+      el.drillFeedbackSubtitle.textContent = 'Checking syllable clarity and diacritic pitch contours.';
+      el.wordComparisonChips.innerHTML = `<span class="text-xs text-stone-400 italic">Evaluating pronunciation...</span>`;
+      el.recognizedTranscriptText.textContent = browserTranscript ? `"${browserTranscript}"` : 'Listening to audio...';
+      el.aiCoachingTip.textContent = '';
+
+      // Attempt Gemini multimodal audio assessment for accurate Vietnamese tone feedback
+      try {
+        const base64Audio = await blobToBase64(audioBlob);
+        const cleanMime = (audioBlob.type || 'audio/webm').split(';')[0];
+
+        const prompt = `You are an encouraging, expert Vietnamese language pronunciation tutor.
+The student is practicing reading this target Vietnamese sentence aloud:
+Target: "${targetText}"
+
+Listen carefully to the student's audio recording.
+1. Transcribe exactly what you hear in Vietnamese (including the tones they actually produced).
+2. Score their overall pronunciation, rhythm, and Vietnamese tone accuracy from 0 to 100.
+3. For each word in the target sentence, classify its status as:
+   - "exact" (accurate pronunciation and tone)
+   - "close" (right base syllable, slightly off tone or vowel length)
+   - "missed" (mispronounced, wrong tone, or omitted)
+4. Provide one concise, encouraging coaching tip (1-2 sentences) highlighting what they did well and which specific Vietnamese tone(s) to refine.`;
+
+        const payload = {
+          contents: [{
+            role: 'user',
+            parts: [
+              { text: prompt },
+              {
+                inlineData: {
+                  mimeType: cleanMime,
+                  data: base64Audio
+                }
+              }
+            ]
+          }],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: 'OBJECT',
+              properties: {
+                transcribedVietnamese: { type: 'STRING' },
+                score: { type: 'INTEGER' },
+                headline: { type: 'STRING' },
+                coachingTip: { type: 'STRING' },
+                wordResults: {
+                  type: 'ARRAY',
+                  items: {
+                    type: 'OBJECT',
+                    properties: {
+                      word: { type: 'STRING' },
+                      status: { type: 'STRING' },
+                      note: { type: 'STRING' }
+                    },
+                    required: ['word', 'status']
+                  }
+                }
+              },
+              required: ['transcribedVietnamese', 'score', 'headline', 'coachingTip', 'wordResults']
+            }
+          }
+        };
+
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        const response = await fetchWithBackoff(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error('Gemini API unavailable');
+        }
+
+        const data = await response.json();
+        const jsonText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!jsonText) throw new Error('Empty evaluation response');
+
+        const parsed = JSON.parse(jsonText);
+        renderEvaluationResult({
+          score: Math.max(0, Math.min(100, Number(parsed.score) || 0)),
+          headline: parsed.headline || 'Nice effort!',
+          transcript: parsed.transcribedVietnamese || browserTranscript || '(Audio recorded)',
+          coachingTip: parsed.coachingTip || 'Compare your recording with the native voice above.',
+          wordResults: Array.isArray(parsed.wordResults) && parsed.wordResults.length > 0
+            ? parsed.wordResults
+            : compareWordsLocally(targetText, parsed.transcribedVietnamese || browserTranscript),
+          engineLabel: 'AI Tone Analysis'
+        });
+        return;
+
+      } catch (err) {
+        // Fallback: Deterministic Vietnamese Diacritic & Syllable Comparison using Web Speech transcript
+        const localWordResults = compareWordsLocally(targetText, browserTranscript);
+        const exactCount = localWordResults.filter(w => w.status === 'exact').length;
+        const closeCount = localWordResults.filter(w => w.status === 'close').length;
+        const totalWords = Math.max(1, localWordResults.length);
+
+        const computedScore = browserTranscript
+          ? Math.round(((exactCount * 1.0 + closeCount * 0.65) / totalWords) * 100)
+          : 0;
+
+        let headline = 'Good practice session!';
+        let tip = 'Play back your recording below and compare each syllable pitch with the native audio.';
+
+        if (!browserTranscript) {
+          headline = 'Recording captured!';
+          tip = 'Your browser speech recognizer did not catch text—tap "Play My Recording" to listen and self-check against "Hear Sentence".';
+        } else if (computedScore >= 85) {
+          headline = 'Excellent tone accuracy!';
+          tip = 'Your Vietnamese diacritics and rhythm matched closely. Try increasing your natural speaking flow!';
+        } else if (computedScore >= 55) {
+          headline = 'Solid start — check highlighted tones';
+          tip = 'Words in amber matched the base sound but need a sharper tone contour (sắc rising vs. nặng heavy drop).';
+        } else {
+          headline = 'Keep practicing — listen & repeat';
+          tip = 'Try playing the sentence at 0.75x speed first, focusing on one tone mark at a time.';
+        }
+
+        renderEvaluationResult({
+          score: browserTranscript ? computedScore : 75,
+          headline,
+          transcript: browserTranscript || '(Audio ready for self-review)',
+          coachingTip: tip,
+          wordResults: localWordResults,
+          engineLabel: browserTranscript ? 'Speech Recognition' : 'Audio Playback'
+        });
+      }
+    }
+
+    function compareWordsLocally(targetSentence, spokenSentence) {
+      const targetTokens = targetSentence.split(/\s+/).filter(Boolean);
+      const spokenTokens = (spokenSentence || '')
+        .split(/\s+/)
+        .map(normalizeWord)
+        .filter(Boolean);
+
+      const spokenStripped = spokenTokens.map(stripVietnameseDiacritics);
+
+      return targetTokens.map(rawWord => {
+        const cleanTarget = normalizeWord(rawWord);
+        const strippedTarget = stripVietnameseDiacritics(cleanTarget);
+
+        if (!cleanTarget) {
+          return { word: rawWord, status: 'exact', note: '' };
+        }
+
+        if (spokenTokens.includes(cleanTarget)) {
+          return { word: rawWord, status: 'exact', note: 'Tone matched' };
+        }
+
+        if (spokenStripped.includes(strippedTarget)) {
+          return { word: rawWord, status: 'close', note: 'Check tone mark' };
+        }
+
+        return { word: rawWord, status: 'missed', note: 'Practice pronunciation' };
+      });
+    }
+
+    function renderEvaluationResult({ score, headline, transcript, coachingTip, wordResults, engineLabel }) {
+      const item = getCurrentSentence();
+
+      // Mark sentence as practiced if score >= 60 or audio recorded
+      if (score >= 60) {
+        state.practicedIds.add(item.id);
+        savePracticedIds();
+        el.masteredCount.textContent = state.practicedIds.size;
+        renderDeckOverview();
+      }
+
+      // Update score badge color
+      el.scoreBadgeRing.className = 'w-14 h-14 rounded-2xl text-white flex flex-col items-center justify-center shadow-sm shrink-0 ' +
+        (score >= 80 ? 'bg-jade' : score >= 55 ? 'bg-gold' : 'bg-terracotta');
+
+      el.drillScoreValue.textContent = `${score}%`;
+      el.drillFeedbackTitle.textContent = headline;
+      el.evalEngineBadge.textContent = engineLabel;
+      el.recognizedTranscriptText.textContent = `"${transcript}"`;
+      el.aiCoachingTip.textContent = coachingTip;
+
+      // Render word-by-word chips
+      el.wordComparisonChips.innerHTML = wordResults.map(w => {
+        const status = (w.status || 'exact').toLowerCase();
+        let chipStyle = 'bg-jade-light text-jade-dark border-jade/30';
+        let dotColor = 'bg-jade';
+
+        if (status === 'close') {
+          chipStyle = 'bg-gold-light text-amber-900 border-gold/40';
+          dotColor = 'bg-gold';
+        } else if (status === 'missed') {
+          chipStyle = 'bg-terracotta-light text-terracotta-dark border-terracotta/30';
+          dotColor = 'bg-terracotta';
+        }
+
+        return `
+          <div class="inline-flex flex-col px-3 py-1.5 rounded-xl border ${chipStyle}">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full ${dotColor}"></span>
+              <span class="font-viet font-bold text-sm sm:text-base">${escapeHtml(w.word)}</span>
+            </div>
+            ${w.note ? `<span class="text-[10px] opacity-80 mt-0.5">${escapeHtml(w.note)}</span>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ---------------------------------------------------------------------------
+    // 10. EVENT LISTENERS & INTERACTIONS
+    // ---------------------------------------------------------------------------
+    el.hearSentenceBtn.addEventListener('click', speakCurrentSentence);
+
+    el.speedPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        state.speechRate = parseFloat(pill.dataset.speed);
+        el.speedPills.forEach(p => {
+          p.classList.remove('bg-white', 'text-jade-dark', 'shadow-2xs');
+          p.classList.add('text-jade-dark/70');
+        });
+        pill.classList.add('bg-white', 'text-jade-dark', 'shadow-2xs');
+        pill.classList.remove('text-jade-dark/70');
+      });
+    });
+
+    el.recordDrillBtn.addEventListener('click', toggleRecordingDrill);
+
+    el.retryDrillBtn.addEventListener('click', () => {
+      startRecordingDrill();
+    });
+
+    el.playStudentAudioBtn.addEventListener('click', () => {
+      if (!state.recordedAudioUrl) return;
+      if (!el.studentAudioPlayer.paused) {
+        el.studentAudioPlayer.pause();
+        el.studentAudioPlayer.currentTime = 0;
+        el.playStudentLabel.textContent = 'Play My Recording';
+        return;
+      }
+      stopAllAudio();
+      el.playStudentLabel.textContent = 'Playing Yours...';
+      el.studentAudioPlayer.play();
+    });
+
+    el.studentAudioPlayer.addEventListener('ended', () => {
+      el.playStudentLabel.textContent = 'Play My Recording';
+    });
+
+    el.toggleHintsBtn.addEventListener('click', () => {
+      state.showHints = !state.showHints;
+      renderCard();
+    });
+
+    el.toneGuideToggle.addEventListener('click', () => {
+      el.toneGuideDrawer.classList.toggle('hidden');
+    });
+
+    el.closeToneGuide.addEventListener('click', () => {
+      el.toneGuideDrawer.classList.add('hidden');
+    });
+
+    el.prevCardBtn.addEventListener('click', () => {
+      stopAllAudio();
+      const deck = getFilteredDeck();
+      state.currentIndex = (state.currentIndex - 1 + deck.length) % deck.length;
+      hideDrillResults();
+      renderCard();
+      renderDeckOverview();
+    });
+
+    el.nextCardBtn.addEventListener('click', () => {
+      stopAllAudio();
+      const deck = getFilteredDeck();
+      state.currentIndex = (state.currentIndex + 1) % deck.length;
+      hideDrillResults();
+      renderCard();
+      renderDeckOverview();
+    });
+
+    el.shuffleCardBtn.addEventListener('click', () => {
+      stopAllAudio();
+      const deck = getFilteredDeck();
+      if (deck.length <= 1) return;
+      let nextIdx = state.currentIndex;
+      while (nextIdx === state.currentIndex) {
+        nextIdx = Math.floor(Math.random() * deck.length);
+      }
+      state.currentIndex = nextIdx;
+      hideDrillResults();
+      renderCard();
+      renderDeckOverview();
+    });
+
+    // Custom Sentence Modal Logic
+    const openCustomModal = () => {
+      el.customSentenceModal.classList.remove('hidden');
+      el.inputVietnamese.focus();
+    };
+    const closeCustomModal = () => {
+      el.customSentenceModal.classList.add('hidden');
+      el.customSentenceForm.reset();
+    };
+
+    el.openCustomModalBtn.addEventListener('click', openCustomModal);
+    el.closeCustomModalBtn.addEventListener('click', closeCustomModal);
+    el.cancelCustomModalBtn.addEventListener('click', closeCustomModal);
+    el.customSentenceModal.addEventListener('click', (e) => {
+      if (e.target === el.customSentenceModal) closeCustomModal();
+    });
+
+    el.customSentenceForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const viet = el.inputVietnamese.value.trim();
+      const eng = el.inputEnglish.value.trim();
+      if (!viet || !eng) return;
+
+      const newCard = {
+        id: 'custom-' + Date.now(),
+        category: 'My Custom',
+        difficulty: el.inputDifficulty.value || 'Beginner',
+        vietnamese: viet,
+        english: eng,
+        phonetic: el.inputPhonetic.value.trim(),
+        notes: el.inputNotes.value.trim() || 'Custom practice sentence. Listen closely to the tone contour of each syllable.',
+        isCustom: true
+      };
+
+      state.sentences.push(newCard);
+      saveCustomSentences();
+
+      state.activeCategory = 'My Custom';
+      const customDeck = getFilteredDeck();
+      state.currentIndex = customDeck.length - 1;
+
+      closeCustomModal();
+      hideDrillResults();
+      renderAll();
+      showToast('Custom sentence added to your deck!', 'success');
+    });
+
+    el.deleteCustomBtn.addEventListener('click', () => {
+      const current = getCurrentSentence();
+      if (!current || !current.isCustom) return;
+
+      state.sentences = state.sentences.filter(s => s.id !== current.id);
+      saveCustomSentences();
+
+      if (getFilteredDeck().length === 0) {
+        state.activeCategory = 'All';
+      }
+      state.currentIndex = 0;
+      hideDrillResults();
+      renderAll();
+      showToast('Custom sentence removed.', 'info');
+    });
+
+    // ---------------------------------------------------------------------------
+    // 11. INITIALIZE APPLICATION ON WINDOW LOAD
+    // ---------------------------------------------------------------------------
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedData();
+      initTTSVoices();
+      initSpeechRecognition();
+      renderAll();
+    });
+  </script>
+</body>
+</html>
